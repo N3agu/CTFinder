@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTFinder - Home</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <a href="index.html">CTFinder</a>
+        </div>
+        <button class="nav-toggle" aria-label="toggle navigation" aria-expanded="false">
+            <span class="hamburger-icon-bar"></span>
+            <span class="hamburger-icon-bar"></span>
+            <span class="hamburger-icon-bar"></span>
+        </button>
+        <ul class="nav-links" id="nav-links-list">
+            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="writeups.html"><i class="fas fa-file-alt"></i> Writeups</a></li>
+            <li><a href="techniques.html"><i class="fas fa-tools"></i> Techniques</a></li>
+        </ul>
+    </nav>
+
+    <header class="hero-section">
+        <div class="hero-content">
+            <h1>Find CTF Solutions & Techniques Instantly</h1>
+            <p class="subtitle">Search hundreds of CTF writeups, discover common techniques, and level up your CTF skills.</p>
+            <div class="hero-buttons">
+                <a href="writeups.html" class="btn btn-primary"><i class="fas fa-search"></i> Find Writeups</a>
+                <a href="techniques.html" class="btn btn-secondary"><i class="fas fa-lightbulb"></i> Browse Techniques</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="stats-section">
+            <div class="stat-item">
+                <i class="fas fa-book-open"></i>
+                <p><span id="stats-writeups">0</span> CTF Writeups</p>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-cogs"></i>
+                <p><span id="stats-techniques">0</span> Techniques Covered</p>
+            </div>
+        </section>
+
+        <section class="home-section">
+            <h2 class="section-title"><i class="fas fa-star"></i> Featured Writeups</h2>
+            <p class="section-subtitle">Handpicked selections and recent additions to our collection.</p>
+            <div class="featured-grid" id="featured-writeups-container">
+                </div>
+        </section>
+
+        <section class="home-section">
+            <h2 class="section-title"><i class="fas fa-bolt"></i> Popular Techniques</h2>
+            <p class="section-subtitle">Learn the common techniques and tricks used in CTF challenges.</p>
+            <div class="techniques-grid">
+                <a href="techniques.html#web" class="technique-card">
+                    <i class="fas fa-globe-americas"></i>
+                    <h3>Web Exploitation</h3>
+                    <p>SQLi, XSS, SSRF & more.</p>
+                </a>
+                <a href="techniques.html#crypto" class="technique-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Cryptography</h3>
+                    <p>Ciphers, hashing, RSA.</p>
+                </a>
+                <a href="techniques.html#forensics" class="technique-card">
+                    <i class="fas fa-user-secret"></i>
+                    <h3>Forensics</h3>
+                    <p>Stego, file carving, memory.</p>
+                </a>
+                <a href="techniques.html#rev" class="technique-card">
+                    <i class="fas fa-microchip"></i>
+                    <h3>Reverse Engineering</h3>
+                    <p>Disassembly, debugging.</p>
+                </a>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="techniques.html" class="btn btn-secondary">Explore All Techniques <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; <span id="currentYear"></span> CTFinder. Created by N3agu. Icons by FontAwesome.</p>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Simple active link highlighter for nav
+        const currentLocation = window.location.href;
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+            link.classList.remove('active'); // Remove active from all
+            if (link.href === currentLocation || (link.href.includes('index.html') && currentLocation.endsWith('/'))) {
+                link.classList.add('active');
+            }
+        });
+        
+        let globalSolvesData = [];
+
+        function slugify(text) {
+            if (!text) return 'untitled-writeup';
+            return text.toString().toLowerCase()
+                .trim()
+            .replace(/\s+/g, '-')               // Replace spaces with -
+                .replace(/[^\w-]+/g, '')        // Remove all non-word chars
+                .replace(/--+/g, '-')           // Replace multiple - with single -
+                .replace(/^-+/, '')             // Trim - from start of text
+                .replace(/-+$/, '');            // Trim - from end of text
+        }
+
+        async function fetchHomePageData() {
+            try {
+                const response = await fetch('writeups.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                globalSolvesData = await response.json();
+                updateStatistics();
+                displayFeaturedWriteups();
+            } catch (error) {
+                console.error("Could not fetch data for home page:", error);
+                document.getElementById('stats-writeups').textContent = 'N/A';
+                document.getElementById('stats-techniques').textContent = 'N/A';
+                const featuredContainer = document.getElementById('featured-writeups-container');
+                if(featuredContainer) featuredContainer.innerHTML = "<p>Could not load featured writeups.</p>";
+            }
+        }
+
+        function updateStatistics() {
+            const writeupsCount = globalSolvesData.length;
+            const uniqueTags = new Set();
+            globalSolvesData.forEach(solve => {
+                if (solve.tags && Array.isArray(solve.tags)) {
+                    solve.tags.forEach(tag => uniqueTags.add(tag.trim().toLowerCase()));
+                }
+            });
+            const techniquesCount = uniqueTags.size;
+
+            document.getElementById('stats-writeups').textContent = writeupsCount;
+            document.getElementById('stats-techniques').textContent = techniquesCount;
+        }
+
+        function displayFeaturedWriteups() {
+            const container = document.getElementById('featured-writeups-container');
+            if (!container) return;
+
+            // Display first 3 writeups as featured, or implement more complex logic (e.g. random, or specific featured flag in JSON)
+            const featured = globalSolvesData.slice(0, 3); 
+            
+            container.innerHTML = ''; // Clear previous content
+            if (featured.length === 0 && globalSolvesData.length > 0) {
+                 // If there are writeups but less than 3, show what's available
+                globalSolvesData.slice(0, globalSolvesData.length).forEach(populateCard);
+            } else if (featured.length === 0) {
+                container.innerHTML = "<p>No writeups available to feature currently.</p>";
+                return;
+            }
+            
+            featured.forEach(solve => {
+                const solveSlug = slugify(solve.name);
+                const card = document.createElement('div');
+                card.className = 'featured-card'; // This will be the new card style for featured writeups
+                
+                let description = solve.description || 'No description available.';
+                if (description.length > 100) {
+                    description = description.substring(0, 100) + '...';
+                }
+
+                card.innerHTML = `
+                    <div class="card-icon-placeholder"><i class="fas fa-file-code"></i></div> <h3>${solve.name || 'Untitled Writeup'}</h3>
+                    <p class="card-description">${description.replace(/\n/g, "<br>")}</p>
+                    <div class="card-tags">
+                        ${(solve.tags && solve.tags.length > 0) ? solve.tags.slice(0,3).map(tag => `<span class="tag">${tag}</span>`).join('') : ''}
+                    </div>
+                    <a href="writeups.html#solve-${solveSlug}" class="btn-view-writeup">View Writeup <i class="fas fa-arrow-right"></i></a>
+                `;
+                container.appendChild(card);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', fetchHomePageData);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Navigation Toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const navLinksList = document.getElementById('nav-links-list');
+
+            if (navToggle && navLinksList) {
+                navToggle.addEventListener('click', () => {
+                    navLinksList.classList.toggle('active');
+                    navToggle.classList.toggle('active'); // For animating the hamburger icon itself
+                    // Update aria-expanded attribute
+                    const isExpanded = navLinksList.classList.contains('active');
+                    navToggle.setAttribute('aria-expanded', isExpanded);
+                });
+            }
+
+            // Current Year for Footer
+            const currentYearSpan = document.getElementById('currentYear');
+            if (currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
+            }
+            
+            // Active Navigation Link Highlighter
+            const currentLocation = window.location.href.split('#')[0]; // Ignore hash
+            const allNavLinks = document.querySelectorAll('.nav-links a');
+            
+            allNavLinks.forEach(link => link.classList.remove('active')); // Clear all first
+
+            let bestMatch = null;
+            allNavLinks.forEach(link => {
+                // Check for exact match or if it's index.html for the root path
+                if (link.href === currentLocation || (link.pathname.endsWith('index.html') && (currentLocation.endsWith('/') || currentLocation.endsWith('index.html')))) {
+                    bestMatch = link;
+                }
+                // Check for partial match if not index.html
+                else if (link.getAttribute('href') !== 'index.html' && currentLocation.includes(link.getAttribute('href')) && link.getAttribute('href') !== '') {
+                     if (!bestMatch || (bestMatch.getAttribute('href') === 'index.html')) { // Prioritize more specific matches over index
+                        bestMatch = link;
+                    }
+                }
+            });
+
+            if (bestMatch) {
+                bestMatch.classList.add('active');
+            } else { // Fallback for root if no other match and index.html is present
+                const homeLink = document.querySelector('.nav-links a[href="index.html"]');
+                if (homeLink && (currentLocation.endsWith('/') || currentLocation.endsWith('index.html'))) {
+                    homeLink.classList.add('active');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

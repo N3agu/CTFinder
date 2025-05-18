@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTFinder - Writeups</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <a href="index.html">CTFinder</a>
+        </div>
+        <button class="nav-toggle" aria-label="toggle navigation" aria-expanded="false">
+            <span class="hamburger-icon-bar"></span>
+            <span class="hamburger-icon-bar"></span>
+            <span class="hamburger-icon-bar"></span>
+        </button>
+        <ul class="nav-links" id="nav-links-list">
+            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="writeups.html"><i class="fas fa-file-alt"></i> Writeups</a></li>
+            <li><a href="techniques.html"><i class="fas fa-tools"></i> Techniques</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-header">
+        <h1>CTF Writeups</h1>
+        <p class="subtitle">Browse and search for detailed solutions to CTF challenges.</p>
+    </div>
+
+    <div class="search-container-writeups">
+        <div class="search-bar-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="search" placeholder="Search by name, description, tools, content (e.g., 'SQL injection, nmap' or 'picoctf')" onkeyup="filterSolves()">
+        </div>
+    </div>
+    
+    <div class="filters-container">
+        <div class="filters" id="filters">
+            <label onclick="toggleFilter(this)" data-value="Web"><input type="checkbox" value="Web"> Web</label>
+            <label onclick="toggleFilter(this)" data-value="Forensics"><input type="checkbox" value="Forensics"> Forensics</label>
+            <label onclick="toggleFilter(this)" data-value="Reverse Engineering"><input type="checkbox" value="Reverse"> Reverse</label>
+            <label onclick="toggleFilter(this)" data-value="Pwn"><input type="checkbox" value="Pwn"> Pwn</label>
+            <label onclick="toggleFilter(this)" data-value="OSINT"><input type="checkbox" value="OSINT"> OSINT</label>
+            <label onclick="toggleFilter(this)" data-value="Misc"><input type="checkbox" value="Misc"> Misc</label>
+            <label onclick="toggleFilter(this)" data-value="Cryptography"><input type="checkbox" value="Cryptography"> Cryptography</label>
+            <label onclick="toggleFilter(this)" data-value="ML/AI"><input type="checkbox" value="ML/AI"> ML/AI</label>
+            <label onclick="toggleFilter(this)" data-value="Code Review"><input type="checkbox" value="Code Review"> Code Review</label>
+            <label onclick="toggleFilter(this)" data-value="Steganography"><input type="checkbox" value="Steganography"> Steganography</label>
+            <label onclick="toggleFilter(this)" data-value="Mobile"><input type="checkbox" value="Mobile"> Mobile</label>
+            <label onclick="toggleFilter(this)" data-value="Malware"><input type="checkbox" value="Malware"> Malware</label>
+        </div>
+    </div>
+    
+    <div class="solve-container" id="solves">
+        </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 CTFinder. Created by N3agu. Icons by FontAwesome.</p>
+    </footer>
+
+    <script src="js/writeups.js"></script>
+    <script>
+        // Simple active link highlighter for nav
+        const currentLocation = window.location.href;
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+            if (link.href === currentLocation) {
+                document.querySelectorAll('.nav-links a.active').forEach(active => active.classList.remove('active'));
+                link.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
