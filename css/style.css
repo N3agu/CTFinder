@@ -8,6 +8,16 @@ body {
     line-height: 1.6;
 }
 
+html {
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%; 
+  -ms-text-size-adjust: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
 .container {
     width: 90%;
     max-width: 1200px;
