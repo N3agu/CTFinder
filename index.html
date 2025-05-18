@@ -44,7 +44,7 @@
             </div>
             <div class="stat-item">
                 <i class="fas fa-cogs"></i>
-                <p><span id="stats-techniques">0</span> Techniques Covered</p>
+                <p><span id="stats-techniques">8</span> Techniques Covered</p>
             </div>
         </section>
 
@@ -128,7 +128,6 @@
             } catch (error) {
                 console.error("Could not fetch data for home page:", error);
                 document.getElementById('stats-writeups').textContent = 'N/A';
-                document.getElementById('stats-techniques').textContent = 'N/A';
                 const featuredContainer = document.getElementById('featured-writeups-container');
                 if(featuredContainer) featuredContainer.innerHTML = "<p>Could not load featured writeups.</p>";
             }
@@ -136,16 +135,8 @@
 
         function updateStatistics() {
             const writeupsCount = globalSolvesData.length;
-            const uniqueTags = new Set();
-            globalSolvesData.forEach(solve => {
-                if (solve.tags && Array.isArray(solve.tags)) {
-                    solve.tags.forEach(tag => uniqueTags.add(tag.trim().toLowerCase()));
-                }
-            });
-            const techniquesCount = uniqueTags.size;
 
             document.getElementById('stats-writeups').textContent = writeupsCount;
-            document.getElementById('stats-techniques').textContent = techniquesCount;
         }
 
         function displayFeaturedWriteups() {
