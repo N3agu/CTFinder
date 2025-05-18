@@ -40,7 +40,7 @@ async function fetchSolves() {
         const data = await response.json();
         solves = data;
         displaySolves();
-        scrollToHashElement(); // Call after solves are displayed
+        scrollToHashElement();
     } catch (error) {
         console.error("Could not fetch solves:", error);
         const container = document.getElementById('solves');
@@ -58,7 +58,7 @@ function displaySolves(filteredSolves = solves) {
     }
     container.innerHTML = '';
     if (filteredSolves.length === 0) {
-        container.innerHTML = `<p style="text-align: center; color: #A47CFF; font-size: 1.2em; padding: 20px;">No writeups found matching your criteria. Try different search terms or filters!</p>`;
+        container.innerHTML = `<p style="text-align: center; color: #A47CFF; font-size: 1.2em; padding: 20px;">No writeups found matching your criteria.</p>`;
         return;
     }
 
@@ -66,22 +66,49 @@ function displaySolves(filteredSolves = solves) {
         const solveElement = document.createElement('div');
         solveElement.classList.add('solve');
         const solveSlug = slugify(solve.name);
-        solveElement.id = `solve-${solveSlug}`; // Set unique ID for permalink
+        solveElement.id = `solve-${solveSlug}`;
 
         const description = solve.description ? solve.description.replace(/\n/g, "<br>") : 'No description provided.';
         
-        let solveSteps = solve.solve ? solve.solve : 'No solution steps provided.';
-        solveSteps = solveSteps.replace(/```([\s\S]*?)```/g, (match, codeContent) => {
+        let rawSolveSteps = solve.solve ? solve.solve : 'No solution steps provided.';
+        let processedSolveSteps = '';
+
+        const codeBlockPlaceholders = [];
+        let placeholderIndex = 0;
+
+        processedSolveSteps = rawSolveSteps.replace(/```(\w+)?\s*\n?([\s\S]*?)```/g, (match, lang, codeContent) => {
+            const language = lang ? lang.trim().toLowerCase() : 'text';
+            
             const escapedCode = codeContent
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;");
-            return `<pre><code>${escapedCode}</code></pre>`;
-        });
-        solveSteps = solveSteps.replace(/\{([^{}]+\.(?:png|jpg|jpeg|gif))\}/gi, '<img src="images/$1" alt="$1" style="max-width:100%; border-radius: 5px; margin-top:10px; margin-bottom:10px;">');
-        solveSteps = solveSteps.replace(/\n/g, "<br>");
 
-        // Add a permalink icon/anchor
+            const trimmedCodeContent = codeContent.trim();
+            const lineCount = trimmedCodeContent === '' ? 1 : trimmedCodeContent.split('\n').length;
+            const isSingleLine = lineCount <= 1;
+
+            let preClasses = `language-${language}`;
+
+            const wrapperClasses = `code-block-wrapper${isSingleLine ? ' single-line-code-wrapper' : ''}`;
+
+            const codeBlockHtml = `<div class="${wrapperClasses}">
+                                      <pre class="${preClasses.trim()}"><code class="language-${language}">${escapedCode}</code></pre>
+                                      <button class="copy-code-btn" title="Copy code">
+                                          <i class="fas fa-copy"></i> Copy
+                                      </button>
+                                  </div>`;
+            codeBlockPlaceholders.push(codeBlockHtml);
+            return `___CODE_BLOCK_PLACEHOLDER_${placeholderIndex++}___`;
+        });
+
+        processedSolveSteps = processedSolveSteps.replace(/\{([^{}]+\.(?:png|jpg|jpeg|gif))\}/gi, '<img src="images/$1" alt="$1" style="max-width:100%; border-radius: 5px; margin-top:10px; margin-bottom:10px;">');
+        processedSolveSteps = processedSolveSteps.replace(/\n/g, "<br>");
+
+        codeBlockPlaceholders.forEach((blockHtml, index) => {
+            processedSolveSteps = processedSolveSteps.replace(`___CODE_BLOCK_PLACEHOLDER_${index}___`, blockHtml);
+        });
+        
         const permalinkAnchor = `<a href="#solve-${solveSlug}" class="permalink-icon" title="Permanent link to this writeup"><i class="fas fa-link"></i></a>`;
 
         solveElement.innerHTML = `
@@ -93,11 +120,38 @@ function displaySolves(filteredSolves = solves) {
                 <p><strong>Tools used:</strong> ${solve.tools || 'N/A'}</p>
                 <p><strong>Tags:</strong> ${(solve.tags && solve.tags.length > 0) ? solve.tags.join(', ') : 'N/A'}</p>
                 <p><strong>Solution:</strong></p>
-                <div>${solveSteps}</div>
-                <p></p>
+                <div>${processedSolveSteps}</div> 
             </div>`;
         container.appendChild(solveElement);
+
+        const copyButtons = solveElement.querySelectorAll('.copy-code-btn');
+        copyButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const wrapper = btn.closest('.code-block-wrapper');
+                const codeElement = wrapper.querySelector('pre code');
+                const codeToCopy = codeElement.textContent;
+
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    btn.disabled = true;
+                    setTimeout(() => {
+                        btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                        btn.disabled = false;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy code: ', err);
+                    btn.textContent = 'Error';
+                     setTimeout(() => {
+                        btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                    }, 2000);
+                });
+            });
+        });
     });
+
+    if (typeof Prism !== 'undefined') {
+        Prism.highlightAll();
+    }
 }
 
 function filterSolves() {

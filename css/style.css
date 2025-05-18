@@ -228,6 +228,59 @@ a:hover {
     border-color: #A47CFF;
 }
 
+.solve pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+    border-radius: 0.3em;
+    border: 1px solid #3A3A5A;
+    position: relative;
+    white-space: pre;
+}
+
+.solve pre[class*="language-"] code[class*="language-"] {
+    font-family: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 0.95em;
+    line-height: 1.5;
+    white-space: pre; 
+}
+
+/* Style for the wrapper around code blocks to contain the copy button */
+.code-block-wrapper {
+    position: relative;
+    margin: 1.5em 0;
+}
+
+.copy-code-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #4a4a6a;
+    color: #E0E0E0;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-family: 'Poppins', sans-serif;
+    opacity: 0;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    z-index: 1;
+}
+
+.code-block-wrapper:hover .copy-code-btn {
+    opacity: 1;
+}
+
+.copy-code-btn:hover {
+    background-color: #7B3FF2;
+    color: #fff;
+}
+
+.copy-code-btn i {
+    margin-right: 5px;
+}
+
 .techniques-content {
     padding-top: 20px;
     padding-bottom: 40px;
