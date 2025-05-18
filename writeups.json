@@ -265,7 +265,7 @@
         "author": "David Pirneci",
         "link": "https://davidpirneci.com/posts/unr2025-teams/",
         "description": "Simple jail challenge - we just needed to find out we could execute any command we wanted by bypassing the filter.",
-        "solve": "After some trial and error, we found a method to bypass the safety measures. We discovered we could execute anything inside single quotes (' ').\nFlag: ctf{97829f135832f37a4b3d6176227cf6b96d481d543e6051c0087f24c1cd0881ed}",
+        "solve": "After some trial and error, we found a method to bypass the safety measures. We discovered we could execute anything inside single quotes (' ').\n{image12.png}\nFlag: ctf{97829f135832f37a4b3d6176227cf6b96d481d543e6051c0087f24c1cd0881ed}",
         "tools": "Jail Escape Techniques",
         "tags": ["Misc", "Jail", "Sandbox Escape", "Filter Bypass"]
     },
@@ -274,7 +274,7 @@
         "author": "David Pirneci",
         "link": "https://davidpirneci.com/posts/unr2025-teams/",
         "description": "For us, guessing the letters was the solution",
-        "solve": "After doing trial and error and using common letters, we managed to guess the prompted word from the game.\nFlag: ctf{609e75158367c10d4bd189db41206dbdde4d1c542279ea5275bbcdf440af7509}",
+        "solve": "After doing trial and error and using common letters, we managed to guess the prompted word from the game.\n{image13.png}\nFlag: ctf{609e75158367c10d4bd189db41206dbdde4d1c542279ea5275bbcdf440af7509}",
         "tools": "Manual Guessing",
         "tags": ["Misc", "Game", "Guessing"]
     },
